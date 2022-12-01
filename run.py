@@ -3,7 +3,7 @@ import glob
 import os
 import sys
 import time
-
+from ego_agents import EgoAgent
 
 ##############
 ## This is used to load the path for the carla library
@@ -48,6 +48,19 @@ def main():
     blueprintsWalkers = blueprint_library.filter('walker.pedestrian.*')
     walker_controller_bp = blueprint_library.find('controller.ai.walker')
     walkers_spawn_points = world.get_random_location_from_navigation()
+
+    egos=[]
+    for i in range(3):
+        egos.append(EgoAgent(world))
+    
+    print(str(len(egos))+"Ego Agents added..")
+    world.tick()
+    spectator = world.get_spectator()
+    transform = egos[0].ego.get_transform()
+    spectator.set_transform(carla.Transform(transform.location + carla.Location(z=100), carla.Rotation(pitch=-90)))
+    print("Spectator position set to the first ego agent")
+
+    ### Testing still Lidar Data yet to be recieved
     lidar_segment_bp = blueprint_library.find('sensor.lidar.ray_cast_semantic')
 
     w_all_actors, w_all_id = getWalkers(client, world, blueprintsWalkers, 10)
