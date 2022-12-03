@@ -50,7 +50,11 @@ def main():
     walkers_spawn_points = world.get_random_location_from_navigation()
 
     egos=[]
+<<<<<<< Updated upstream
     for i in range(3):
+=======
+    for i in range(1):
+>>>>>>> Stashed changes
         egos.append(EgoAgent(world))
     
     print(str(len(egos))+"Ego Agents added..")
