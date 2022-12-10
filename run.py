@@ -3,19 +3,9 @@ import glob
 import os
 import sys
 import time
-from ego_agents import EgoAgent
-
-##############
-## This is used to load the path for the carla library
-##############
-############
-### 
-# loading custom libraries
+from ego_agents import EgoAgent,CarlaSyncMode
 
 
-# from load_world import test
-
-####
 from spawn_actors import getVehicles,getWalkers
 try:
     sys.path.append(glob.glob('../carla/dist/carla-*%d.%d-%s.egg' % (
@@ -26,6 +16,46 @@ except IndexError:
     pass
 print(sys.path)
 import carla
+
+def saveAllSensors(out_root_folder, sensor_data, sensor_types):
+    sensor_data.pop(0)
+
+    for i in range(len(sensor_data)):
+        sensor_name = sensor_types[i]
+        if(sensor_name == 'sensor.camera.rgb'):
+            saveImage(sensor_data[i], os.path.join(out_root_folder, sensor_name))
+        if(sensor_name == 'sensor.lidar.ray_cast' or sensor_name == 'sensor.lidar.ray_cast_semantic'):
+            saveLidar(sensor_data[i], os.path.join(out_root_folder, sensor_name))
+        if(sensor_name=='sensor.camera.semantic_segmentation'):
+            saveImageSeg(sensor_data[i], os.path.join(out_root_folder, sensor_name))
+        if(sensor_name=='sensor.camera.instance_segmentation'):
+            saveImageIns(sensor_data[i], os.path.join(out_root_folder, sensor_name))
+
+def saveLidar(output, filepath):
+    output.save_to_disk(filepath + '/%05d'%output.frame)
+    with open(filepath + "/lidar_metadata.txt", 'a') as fp:
+        fp.writelines(str(output) + ", ")
+        fp.writelines(str(output.transform) + "\n")
+
+
+def saveImage(output, filepath):
+    output.save_to_disk(filepath + '/%05d'%output.frame)
+    with open(filepath + "/camera_metadata.txt", 'a') as fp:
+        fp.writelines(str(output) + ", ")
+        fp.writelines(str(output.transform) + "\n")
+    return
+def saveImageSeg(output, filepath):
+    output.save_to_disk(filepath + '/%05d'%output.frame,carla.ColorConverter.CityScapesPalette)
+    with open(filepath + "/camera_seg_metadata.txt", 'a') as fp:
+        fp.writelines(str(output) + ", ")
+        fp.writelines(str(output.transform) + "\n")
+    return
+def saveImageIns(output, filepath):
+    output.save_to_disk(filepath + '/%05d'%output.frame)
+    with open(filepath + "/camera_insseg_metadata.txt", 'a') as fp:
+        fp.writelines(str(output) + ", ")
+        fp.writelines(str(output.transform) + "\n")
+    return
 
 def main():
     #initial settings
@@ -50,29 +80,36 @@ def main():
     walkers_spawn_points = world.get_random_location_from_navigation()
 
     egos=[]
-<<<<<<< Updated upstream
-    for i in range(3):
-=======
-    for i in range(1):
->>>>>>> Stashed changes
-        egos.append(EgoAgent(world))
+    for i in range(2):
+        egos.append(EgoAgent('CarlaTesting/sensors.json',world))
     
     print(str(len(egos))+"Ego Agents added..")
+
     world.tick()
-    spectator = world.get_spectator()
-    transform = egos[0].ego.get_transform()
-    spectator.set_transform(carla.Transform(transform.location + carla.Location(z=100), carla.Rotation(pitch=-90)))
-    print("Spectator position set to the first ego agent")
-
-    ### Testing still Lidar Data yet to be recieved
-    lidar_segment_bp = blueprint_library.find('sensor.lidar.ray_cast_semantic')
-
-    w_all_actors, w_all_id = getWalkers(client, world, blueprintsWalkers, 10)
-    v_all_actors, v_all_id = getVehicles(client, world, vehicles_spawn_points, blueprintsVehicles, 20)
     
-    while True:
-        world.tick()
-
+    k=0
+    try:
+        print("entered loop")
+        with CarlaSyncMode(world, []) as sync_mode:
+            print("entered inner loop")
+            while True:
+                print("entered inner inner loop")
+                frame_id,data = sync_mode.tick(timeout=5.0)
+                if(k < 70):
+                    k = k + 1
+                    continue
+                for i in range(len(egos)):
+                    data = egos[i].getSensorData(frame_id)
+                    output_folder = os.path.join("data", "ego_" + str(i))
+                    saveAllSensors(output_folder, data, egos[i].sensor_types)
+                    print("next")
+    finally:
+        print("Do the destruction here!!!!!!!!!!!!!")
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        print('\ndone.')

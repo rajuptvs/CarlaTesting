@@ -1,0 +1,63 @@
+{
+    "sensors": [
+
+        {
+            "type": "sensor.camera.rgb",
+            "role_name": "rgb1",
+            "transform":[{
+            "x": 2.0, "y": 0.0, "z": 2.0, "roll": 0.0, "pitch": 0.0, "yaw": 0.0
+            }],
+            "fov":100.0,
+            "image_size_x": 1920,
+            "image_size_y": 1080
+        },
+    
+        {
+            "type": "sensor.lidar.ray_cast",
+            "role_name": "lidar1",
+            "transform":[{
+            "x": 0.0, "y": 0.0, "z": 2.4, "roll": 0.0, "pitch": 0.0, "yaw": 0.0
+            }],
+            "range": 100,
+            "channels": 64,
+            "points_per_second": 800000,
+            "upper_fov": 10.0,
+            "lower_fov": -30,
+            "rotation_frequency": 30,
+            "dropoff_general_rate" : 0.0
+        },
+	    {
+	    "type": "sensor.camera.semantic_segmentation",
+            "role_name": "seg",
+            "transform":[{
+            "x": 2.0, "y": 0.0, "z": 2.0, "roll": 0.0, "pitch": 0.0, "yaw": 0.0
+            }],
+            "image_size_x": 1920,
+            "image_size_y": 1080,
+            "fov": 100,
+            "lens_circle_falloff": 5.0,
+            "lens_circle_multiplier": 0.0,
+            "lens_k": -1.0,
+            "lens_kcube": 0.0,
+            "lens_x_size": 0.08,
+            "lens_y_size": 0.08
+	},
+    {
+	    "type": "sensor.camera.instance_segmentation",
+            "role_name": "inst_seg",
+            "transform":[{
+            "x": 2.0, "y": 0.0, "z": 2.0, "roll": 0.0, "pitch": 0.0, "yaw": 0.0
+            }],
+            "image_size_x": 1920,
+            "image_size_y": 1080,
+            "fov": 100,
+            "lens_circle_falloff": 5.0,
+            "lens_circle_multiplier": 0.0,
+            "lens_k": -1.0,
+            "lens_kcube": 0.0,
+            "lens_x_size": 0.08,
+            "lens_y_size": 0.08
+	}
+
+    ]
+}
