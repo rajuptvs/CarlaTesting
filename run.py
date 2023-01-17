@@ -6,7 +6,6 @@ import time
 from ego_agents import EgoAgent,CarlaSyncMode
 
 
-from spawn_actors import getVehicles,getWalkers
 try:
     sys.path.append(glob.glob('../carla/dist/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
@@ -83,7 +82,7 @@ def main():
     for i in range(2):
         egos.append(EgoAgent('CarlaTesting/sensors.json',world))
     
-    print(str(len(egos))+"Ego Agents added..")
+    print(str(len(egos))+" Ego Agents added..")
 
     world.tick()
     

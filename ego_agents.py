@@ -85,7 +85,6 @@ class EgoAgent:
         
         
     def __init__(self,config,world):
-        print(config)
         self.world=world
         f=open(config)
         data=json.load(f)
@@ -119,14 +118,8 @@ class CarlaSyncMode(object):
         self.sensors = sensors
         self.frame = None
         self._queues = []
-        # self.first_time = True
-
+        
     def __enter__(self):
-        # self._settings = self.world.get_settings()
-        # self.frame = self.world.apply_settings(carla.WorldSettings(
-        #     no_rendering_mode=False,
-        #     synchronous_mode=True,
-        #     fixed_delta_seconds=self.delta_seconds))
 
         def make_queue(register_event):
             q = queue.Queue()
